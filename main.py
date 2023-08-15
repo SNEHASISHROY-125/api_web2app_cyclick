@@ -19,6 +19,11 @@ app= FastAPI()
 #         db.close()
 
 
+@app.get('/')
+def home():
+    return {'helo'}
+
+
 @app.post('/blog', status_code=status.HTTP_201_CREATED,tags=['Blogs'])
 def create(request: Blog , db: Session=Depends(get_db)):
     new_blog = models.Blog(title=request.title,body=request.body)
