@@ -7,7 +7,6 @@ class Test(BaseModel):
 
 class Chat(BaseModel):
     user_id: str
-    add_method: str
     msgg: str
 
 # class ChatR(Chat):

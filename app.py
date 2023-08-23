@@ -67,13 +67,13 @@ def delete_user(user_id:str):
 def user_data(request: Chat):
     val=request.add_method
     print('method:',val)
-    return s3.add_user_data(user_id=request.user_id,add_method=request.add_method,msgg=request.msgg)
+    return s3.add_user_data(user_id=request.user_id,add_method='add_msgg',msgg=request.msgg)
 
 @app.post('/set-user-data-R',status_code=status.HTTP_200_OK,tags=['Test'])
 def user_data(request: Chat):
     val=request.add_method
     print('method:',val)
-    return s3.add_user_data(user_id=request.user_id,add_method=request.add_method,msgg=request.msgg)
+    return s3.add_user_data(user_id=request.user_id,add_method='add_response',msgg=request.msgg)
 
 @app.get('/get-user-data',status_code=status.HTTP_200_OK,tags=['Test'])
 def get_user_data(user_id: str):
