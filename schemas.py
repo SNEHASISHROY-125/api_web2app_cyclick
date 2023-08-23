@@ -1,5 +1,19 @@
 from pydantic import BaseModel
 
+class Test(BaseModel):
+    user_id: str
+    password: str
+    email: str
+
+class Chat(BaseModel):
+    user_id: str
+    add_method: str
+    msgg: str
+
+# class ChatR(Chat):
+
+
+
 class Blog(BaseModel):
     title: str
     body: str

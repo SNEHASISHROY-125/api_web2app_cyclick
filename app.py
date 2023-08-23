@@ -1,11 +1,13 @@
 from typing import List
 from typing import Optional
-from schemas import Blog, ShowBlog , User , DUser , Show_user
+from schemas import Blog, ShowBlog , User , DUser , Show_user , Test, Chat
 from fastapi import FastAPI, Depends, status, Response, HTTPException
 import models
 from database import engine, get_db
 from sqlalchemy.orm import Session
 from hashing import Hash , pwd_cxt
+
+import syncDB as s3
 
 models.Base.metadata.create_all(engine)
 
@@ -18,35 +20,104 @@ app= FastAPI()
 #     finally:
 #         db.close()
 
+guide =(
+'''
+/sign-up | post | request: 
+    user_id: str
+    password: str
+    email: str
+/get-user | get | user_id: str
+/delete-user | delete | user_id: str
+/set-user-data | post | request:
+    user_id: str
+    add_method: str [add_msgg]
+    msgg: str
+/set-user-data-R | post | request:
+    user_id: str
+    add_method: str [add_response]
+    msgg: str
+/get-user-data | get:
+    user_id: str
+/get-user-data-R | get:
+    user_id: str
+'''
+)
 
 @app.get('/')
-def home():
-    return {'helo'}
+def home(help=None):
+    pass_ = 'admin'
+    if help and help==pass_:  return guide
+    else: return {'helo! help-> pass help'}
+
+@app.post('/sign-up',status_code=status.HTTP_201_CREATED,tags=['Test'])
+def signUP(request:Test):
+    print(request)
+    s3.add_user(user_id=request.user_id,password=request.password,email=request.email)
+    return request
+
+@app.get('/get-user',status_code=status.HTTP_200_OK,tags=['Test'])
+def get_user(user_id:str):
+    return s3.get_user(user_id=user_id)
+
+@app.delete('/delete-user',status_code=status.HTTP_200_OK,tags=['Test'])
+def delete_user(user_id:str):
+    return s3.del_user(user_id=user_id)
+
+@app.post('/set-user-data',status_code=status.HTTP_200_OK,tags=['Test'])
+def user_data(request: Chat):
+    val=request.add_method
+    print('method:',val)
+    return s3.add_user_data(user_id=request.user_id,add_method=request.add_method,msgg=request.msgg)
+
+@app.post('/set-user-data-R',status_code=status.HTTP_200_OK,tags=['Test'])
+def user_data(request: Chat):
+    val=request.add_method
+    print('method:',val)
+    return s3.add_user_data(user_id=request.user_id,add_method=request.add_method,msgg=request.msgg)
+
+@app.get('/get-user-data',status_code=status.HTTP_200_OK,tags=['Test'])
+def get_user_data(user_id: str):
+    if user_id in (DB := s3.get_DB()).keys():
+        return DB[user_id]['message']
+    else: return user_id ,"doesn't exist!"
+
+@app.get('/get-user-data-R',status_code=status.HTTP_200_OK,tags=['Test'])
+def get_user_data(user_id: str):
+    if user_id in (DB := s3.get_DB()).keys():
+        return DB[user_id]['response']
+    else: return user_id ,"doesn't exist!"
 
 
+'''
 @app.post('/blog', status_code=status.HTTP_201_CREATED,tags=['Blogs'])
 def create(request: Blog , db: Session=Depends(get_db)):
-    new_blog = models.Blog(title=request.title,body=request.body)
-    db.add(new_blog)
-    db.commit()
-    db.refresh(new_blog)
-    return new_blog
+    # new_blog = models.Blog(title=request.title,body=request.body)
+    # db.add(new_blog)
+    # db.commit()
+    # db.refresh(new_blog)
+    response = s3.put_DB(body=request.model_dump())
+    print(request.model_dump())
+    return(request.model_dump())
 
-@app.get('/blog', status_code=status.HTTP_200_OK, response_model=List[ShowBlog],tags=['Blogs'])
+@app.get('/blog', status_code=status.HTTP_200_OK,tags=['Blogs'])
 def all(response: Response,db: Session=Depends(get_db), id: int=1):
-    if id==1:
-        blogs = db.query(models.Blog).all() # gets all blogs
-        if not blogs: raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f'blog with id {id} not found')  
-    else:
-        # HTTPException(response_model=ShowBlog)
-        blog = db.query(models.Blog).filter(models.Blog.id==id).first()
-        if not blog:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f'blog with id {id} not found')
-            # response.status_code=status.HTTP_404_NOT_FOUND 
-            # return {'detail': f'blog with id {id} not found'}
-        blogs = [blog]
-    print(id)
-    return blogs
+    # if id==1:
+    #     blogs = db.query(models.Blog).all() # gets all blogs
+    #     if not blogs: raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f'blog with id {id} not found')  
+    # else:
+    #     # HTTPException(response_model=ShowBlog)
+    #     blog = db.query(models.Blog).filter(models.Blog.id==id).first()
+    #     if not blog:
+    #         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f'blog with id {id} not found')
+    #         # response.status_code=status.HTTP_404_NOT_FOUND 
+    #         # return {'detail': f'blog with id {id} not found'}
+    #     blogs = [blog]
+    # print(id)
+    # return blogs
+    response = s3.get_DB()
+    print(response)
+    return response
+
 
 @app.delete('/blog', status_code=status.HTTP_204_NO_CONTENT,tags=['Blogs'])
 def destroy(id: int, db: Session=Depends(get_db)):
@@ -97,3 +168,5 @@ def delete_user(request: DUser , db: Session=Depends(get_db) ):
     user.delete(synchronize_session=False)
     db.commit()
     return f'User with Name:{request.name} was deleted'
+
+'''
