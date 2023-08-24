@@ -51,7 +51,7 @@ with concurrent.futures.ThreadPoolExecutor() as executor:
     val = executor.submit(generate_key)
     # print(type(val))
     executor.submit(print,'val: started')
-    # executor.submit(clear_DB,key=user_key,schema=user_schema)
+    executor.submit(clear_DB,key=put_key,schema=user_schema)
     val = val.result()
     print(val)
 

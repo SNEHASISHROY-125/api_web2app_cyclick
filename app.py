@@ -52,11 +52,13 @@ def home(help=None):
  
 @app.get('/sign-in',status_code=status.HTTP_204_NO_CONTENT,tags=['Test'])
 def logIN(user_id: str):
-    smtp
+    # smtp
+    return {'response':'log-in'}
 
 @app.get('/sign-in/verify',status_code=status.HTTP_202_ACCEPTED,tags=['Test'])
 def logIN(user_id: str):
-    smtp
+    # smtp
+    return {'response':'log-in-verify'}
 
 @app.post('/sign-up',status_code=status.HTTP_201_CREATED,tags=['Test'])
 def signUP(request:Test):

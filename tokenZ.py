@@ -69,30 +69,4 @@ dump({
 })
 '''
 
-from cryptography.fernet import Fernet
-
-# Generate a random symmetric key
-# key = Fernet.generate_key()
-# key = b'bHE4cl3Qmu-epB1XKjkYSw0ItVFMAVn9Fyiw-BRP_2Q='
-# print('key:',key)
-
-def encrypt(key:bytes,msgg_body:str):
-    # Create a Fernet cipher using the key
-    cipher = Fernet(key)
-    # Message to encrypt
-    message = msgg_body.encode()
-
-    # Encrypt the message
-    encrypted_message = cipher.encrypt(message)
-
-    print("Encrypted Message:", encrypted_message)
-
-def decrypt(key_, msgg_body):
-    # Create a new Fernet cipher with the same key
-    decipher = Fernet(key_)
-
-    # Decrypt the encrypted message
-    decrypted_message = decipher.decrypt(msgg_body)
-
-    print("Decrypted Message:", decrypted_message.decode())
 
