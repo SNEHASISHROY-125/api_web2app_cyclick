@@ -2,7 +2,7 @@
 Send-In-Blue: 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
 '''
 
-import requests
+# import requests
 import tokenZ as tz
 
 # api = tz.smtp_key
@@ -74,4 +74,4 @@ def send_mail(link,name,email):
 # print(payload)
 # html-content:
 
-send_mail(name='LambdaX',email="rsnehasish1251@gmail.com",link='https://github.com/sendinblue/APIv3-python-library')
+# send_mail(name='LambdaX',email="rsnehasish1251@gmail.com",link='https://github.com/sendinblue/APIv3-python-library')
