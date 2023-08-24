@@ -174,7 +174,7 @@ def add_user(bucket=bucket ,key=user_key ,user_id=None,password=None,email=None)
                 user_DB[user_id] = (user_schema.copy()).pop('user_id')
                 user_DB[user_id]['password'] = password
                 user_DB[user_id]['email'] = email
-                user_DB[user_id]['key'] = private_key # GENERATED-private-key 
+                user_DB[user_id]['key'] = f'{private_key}' # GENERATED-private-key 
                 if 'user_id' in user_DB.keys(): user_DB.pop('user_id')
                 put_DB(key=key,body=user_DB)
                 threading.Thread(target=sync,args=(user_id,put_key)).start()
