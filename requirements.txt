@@ -7,3 +7,5 @@ python-jose
 pydantic
 datetime
 boto3
+pymongo
+cryptography

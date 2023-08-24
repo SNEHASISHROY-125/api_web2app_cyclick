@@ -8,6 +8,7 @@ from sqlalchemy.orm import Session
 from hashing import Hash , pwd_cxt
 
 import syncDB as s3
+import smtp
 
 models.Base.metadata.create_all(engine)
 
@@ -48,6 +49,14 @@ def home(help=None):
     pass_ = 'admin'
     if help and help==pass_:  return guide
     else: return {'helo! help-> pass help'}
+ 
+@app.get('/sign-in',status_code=status.HTTP_204_NO_CONTENT,tags=['Test'])
+def logIN(user_id: str):
+    smtp
+
+@app.get('/sign-in/verify',status_code=status.HTTP_202_ACCEPTED,tags=['Test'])
+def logIN(user_id: str):
+    smtp
 
 @app.post('/sign-up',status_code=status.HTTP_201_CREATED,tags=['Test'])
 def signUP(request:Test):
@@ -83,6 +92,9 @@ def get_user_data(user_id: str):
         return DB[user_id]['response']
     else: return user_id ,"doesn't exist!"
 
+@app.get('/password-reset',status_code=status.HTTP_200_OK,tags=['Test'])
+def password_reset(user_id: str):
+    return s3.password_reset(user_id=user_id)
 
 '''
 @app.post('/blog', status_code=status.HTTP_201_CREATED,tags=['Blogs'])

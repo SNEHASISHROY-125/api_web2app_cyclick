@@ -15,7 +15,8 @@ chat_schema = {
 user_schema = {
     'user_id' : {
         'password': f'{None}',
-        'email': f'{None}'
+        'email': f'{None}',
+        'key' : 'key'
     }
 }
 # Admin :
@@ -36,6 +37,8 @@ import boto3
 import datetime
 import json
 import threading
+import concurrent.futures
+from hashing import generate_key
 
 # admin credential: "some_files/demo_credentials_file.json"
 # func to add/set up admin credentials:
@@ -122,6 +125,7 @@ def clear_DB(bucket=bucket,key=admin_key,schema=None) -> dict:
             Key=key
         )
         print(f'Done! File Set to {schema}')
+        return  True
     else: ...
 
 # SETIING's:
@@ -159,20 +163,24 @@ def add_user(bucket=bucket ,key=user_key ,user_id=None,password=None,email=None)
         print('No user_id was given')
         return 'No user_id was given'
     else:
-        user_DB = get_DB(key=key)
+        with concurrent.futures.ThreadPoolExecutor() as executor:
+            key_=executor.submit(generate_key)
+            user_ = executor.submit(get_DB,bucket,key)
+            private_key = key_.result()
+            user_DB = user_.result()
         if isinstance(user_DB, dict):
             if not user_id in user_DB.keys():
                 # add to user_DB:
                 user_DB[user_id] = (user_schema.copy()).pop('user_id')
                 user_DB[user_id]['password'] = password
                 user_DB[user_id]['email'] = email
+                user_DB[user_id]['key'] = private_key # GENERATED-private-key 
                 if 'user_id' in user_DB.keys(): user_DB.pop('user_id')
                 put_DB(key=key,body=user_DB)
                 threading.Thread(target=sync,args=(user_id,put_key)).start()
                 return 'Done'
             else: print(f'User with id: {user_id} already exists!')
-        else:
-            clear_DB(key=key,schema=user_schema)
+        else: clear_DB(key=key,schema=user_schema)
 
 # DELETE: USER
 def del_user(user_id,password=None,bucket=bucket,key=user_key):
@@ -184,7 +192,15 @@ def del_user(user_id,password=None,bucket=bucket,key=user_key):
 
 # ADD: USER DATA
 def add_user_data(user_id ,add_method ,msgg, file_val = None):
-    file_val = get_DB(key=get_key)
+    # Create a ThreadPoolExecutor
+    with concurrent.futures.ThreadPoolExecutor() as executor:
+        # Submit the get_DB function to the executor
+        user_db = executor.submit(get_DB, bucket, user_key)
+        get_db = executor.submit(get_DB,bucket,put_key)
+        # Wait for the function to complete and get the result
+        user = user_db.result()  # This will block until the function completes
+        file_val= get_db.result()
+     # file_val = get_DB(key=get_key)
     # Call bassed on mode 
     add_msgg_ = None
     if add_method == 'add_response': 
@@ -192,7 +208,6 @@ def add_user_data(user_id ,add_method ,msgg, file_val = None):
     elif add_method == 'add_msgg': 
         add_msgg_ = add_msgg(msgg)
     if not add_msgg_: return False
-    # add_msgg = add_method(msgg)
     if isinstance(file_val, dict):
         if user_id in file_val.keys():
             # add messg to main file & dump
@@ -200,13 +215,11 @@ def add_user_data(user_id ,add_method ,msgg, file_val = None):
             # pass to put_DB method:
             # body = json.dumps(file_val)
             put_DB(body=file_val,key=put_key)
-        else:
-            print('user dosent exitst' ,type(file_val))
-            print(file_val)
+        else: print('user dosent exitst' ,file_val)
 
 def add_msgg(msgg_body): 
     '''Returns key : value as tuple'''
-    timestamp = datetime.datetime.now().strftime('%Y-%m-%d %H:%M')
+    timestamp = datetime.datetime.utcnow().strftime('%Y-%m-%d %H:%M')
     msgg_val_tuple = (
         f"{timestamp}" , f"{msgg_body}"
     )
@@ -214,7 +227,7 @@ def add_msgg(msgg_body):
 
 def add_response(response_body):
     '''Returns key : value as tuple'''
-    timestamp = datetime.datetime.now().strftime('%Y-%m-%d %H:%M')
+    timestamp = datetime.datetime.utcnow().strftime('%Y-%m-%d %H:%M')
     msgg_val_tuple = (
         f"{timestamp}" , f"{response_body}"
     )
