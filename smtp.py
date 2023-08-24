@@ -5,7 +5,7 @@ Send-In-Blue: xkeysib-6ee5a50a08f5ffd1267f3eec8883adc104c857a4142de59aebbb55c63a
 import requests
 import tokenZ as tz
 
-api = tz.smtp_key
+# api = tz.smtp_key
 
 url = "https://api.brevo.com/v3/smtp/email"
 # api = "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"
@@ -39,7 +39,7 @@ payload_schema = {
 headers = {
     "accept": "application/json",
     "content-type": "application/json",
-    "api-key": api
+    "api-key": 'api'
 }
 
 def verify_Token(token):...

@@ -5,7 +5,7 @@ JWT token
 import datetime
 import getpass
 import os
-
+'''
 # Get the value of the environment variable 'smtp_key'
 smtp_key = os.environ.get('smtp_key')
 
@@ -60,7 +60,7 @@ def retreive():
 
 # Print the retrieved data
 # print(data:=retreive())
-'''
+
 dump({
     'user_id' : {
         'password': f'{None}',
@@ -68,5 +68,3 @@ dump({
     }
 })
 '''
-
-
