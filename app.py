@@ -51,19 +51,19 @@ def home(help=None):
     else: return {'helo! help-> pass help'}
  
 @app.get('/sign-in',status_code=status.HTTP_204_NO_CONTENT,tags=['Test'])
-def logIN(user_id: str):
+def logIN(user_D: Test):
     # smtp
-    return {'response':'log-in'}
+    return {'response':'log-in', 'Details':[user_D.email,user_D.email[:user_D.email.rindex("@")]]}
 
 @app.get('/sign-in/verify',status_code=status.HTTP_202_ACCEPTED,tags=['Test'])
-def logIN(user_id: str):
+def logIN(user_D: Test):
     # smtp
     return {'response':'log-in-verify'}
 
 @app.post('/sign-up',status_code=status.HTTP_201_CREATED,tags=['Test'])
 def signUP(request:Test):
-    print(request)
-    s3.add_user(user_id=request.user_id,password=request.password,email=request.email)
+    print(user_id:= request.email[:request.email.rindex("@")])
+    s3.add_user(user_id=user_id,password=request.password,email=request.email)
     return request
 
 @app.get('/get-user',status_code=status.HTTP_200_OK,tags=['Test'])

@@ -1,7 +1,7 @@
 from pydantic import BaseModel
 
 class Test(BaseModel):
-    user_id: str
+    
     password: str
     email: str
 
