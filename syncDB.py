@@ -38,7 +38,17 @@ import datetime
 import json
 import threading
 import concurrent.futures
-from hashing import generate_key
+import hashing as hsh
+
+
+def import_():
+    from hashing import generate_key,Hash,encrypt,decrypt,decode_to_bytes
+    # import concurrent.futures
+    # with concurrent.futures.ThreadPoolExecutor() as executor: executor.submit(import_)
+# import threading
+# thread = threading.Thread(target=import_)
+# thread.start()
+# thread.join()
 
 # admin credential: "some_files/demo_credentials_file.json"
 # func to add/set up admin credentials:
@@ -164,8 +174,8 @@ def add_user(bucket=bucket ,key=user_key ,user_id=None,password=None,email=None)
         return 'No user_id was given'
     else:
         with concurrent.futures.ThreadPoolExecutor() as executor:
-            key_=executor.submit(generate_key)
             user_ = executor.submit(get_DB,bucket,key)
+            key_=executor.submit(hsh.generate_key)
             private_key = key_.result()
             user_DB = user_.result()
         if isinstance(user_DB, dict):
@@ -199,15 +209,18 @@ def add_user_data(user_id ,add_method ,msgg, file_val = None):
         get_db = executor.submit(get_DB,bucket,put_key)
         # Wait for the function to complete and get the result
         user = user_db.result()  # This will block until the function completes
+        user_key_ = hsh.decode_to_bytes(user[user_id]['key'])
         file_val= get_db.result()
      # file_val = get_DB(key=get_key)
     # Call bassed on mode 
     add_msgg_ = None
     if add_method == 'add_response': 
-        add_msgg_ = add_response(msgg)
+        add_msgg_ = add_response(key=user_key_,response_body=msgg)
     elif add_method == 'add_msgg': 
-        add_msgg_ = add_msgg(msgg)
+        add_msgg_ = add_msgg(key=user_key_,msgg_body=msgg)
     if not add_msgg_: return False
+    # Ncrypt: 
+
     if isinstance(file_val, dict):
         if user_id in file_val.keys():
             # add messg to main file & dump
@@ -217,19 +230,19 @@ def add_user_data(user_id ,add_method ,msgg, file_val = None):
             put_DB(body=file_val,key=put_key)
         else: print('user dosent exitst' ,file_val)
 
-def add_msgg(msgg_body): 
+def add_msgg(key:bytes,msgg_body:str) ->str: 
     '''Returns key : value as tuple'''
     timestamp = datetime.datetime.utcnow().strftime('%Y-%m-%d %H:%M')
     msgg_val_tuple = (
-        f"{timestamp}" , f"{msgg_body}"
+        f"{timestamp}" , f"{hsh.encrypt(key=key,msgg_body=msgg_body)}"
     )
     return msgg_val_tuple + ('message',)
 
-def add_response(response_body):
+def add_response(key:bytes,response_body:str) ->str:
     '''Returns key : value as tuple'''
     timestamp = datetime.datetime.utcnow().strftime('%Y-%m-%d %H:%M')
     msgg_val_tuple = (
-        f"{timestamp}" , f"{response_body}"
+        f"{timestamp}" , f"{hsh.encrypt(key=key,msgg_body=response_body)}"
     )
     return msgg_val_tuple + ('response',)
 
