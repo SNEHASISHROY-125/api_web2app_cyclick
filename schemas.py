@@ -1,14 +1,16 @@
 from pydantic import BaseModel
 
 class Test(BaseModel):
-    
+    name: str
     password: str
     email: str
+
 
 class Chat(BaseModel):
     user_id: str
     msgg: str
-
+    class Config():
+        orm_mode = True
 # class ChatR(Chat):
 
 

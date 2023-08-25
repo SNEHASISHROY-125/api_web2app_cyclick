@@ -14,6 +14,7 @@ chat_schema = {
 # User :
 user_schema = {
     'user_id' : {
+        'name': None,
         'password': f'{None}',
         'email': f'{None}',
         'key' : 'key'
@@ -80,6 +81,7 @@ def del_admin_credentials(admin_id,password=None,bucket=bucket,key=admin_key,) -
         # verify using Hash(password) ....
         # delete admin_id
         admin_DB.pop(admin_id)
+        if admin_DB ==  {}: admin_DB = get_schema(key=key)
         response=put_DB(key=key,body=admin_DB)
         if response == 'Done': print(f'Deleted USER with id: {admin_id}')
     else: print(f"id: {admin_id} doesn't exist")
@@ -160,7 +162,7 @@ def put_DB(bucket=put_bucket,key=None,body=None) -> None:
 # SETTING's:
 user_key = "some_files/demo_user_file.json"
 # ADD: USER
-def add_user(bucket=bucket ,key=user_key ,user_id=None,password=None,email=None):
+def add_user(bucket=bucket ,key=user_key ,user_id=None,name_=None,password=None,email=None):
     '''Adds user | user_id, password, email'''
     def sync(user_id,key):
         chat_DB = get_DB(key=key)
@@ -182,6 +184,7 @@ def add_user(bucket=bucket ,key=user_key ,user_id=None,password=None,email=None)
             if not user_id in user_DB.keys():
                 # add to user_DB:
                 user_DB[user_id] = (user_schema.copy()).pop('user_id')
+                user_DB[user_id]['name'] = name_
                 user_DB[user_id]['password'] = hsh.Hash().bcrypt(password)
                 user_DB[user_id]['email'] = email
                 user_DB[user_id]['key'] = f'{private_key}' # GENERATED-private-key 
@@ -200,7 +203,7 @@ def del_user(user_id,password=None,bucket=bucket,key=user_key):
         DB.pop(user_id)
         put_DB(key=get_key,body=DB)
         return True
-    else: return f'No User Named {user_id}'
+    else: return False #f'No User Named {user_id}'
 
 # ADD: USER DATA
 def add_user_data(user_id ,add_method ,msgg, file_val = None):
@@ -253,7 +256,9 @@ def get_user(user_id):
     if user_id == '*': 
         k = get_DB(key=user_key).keys()
         return zip(range(len(k)),k)
-    else: return get_DB(key=user_key)[user_id]
+    else: 
+        if user_id in (U_data:=get_DB(key=user_key)).keys():return U_data[user_id]
+        else: return f'No User Named {user_id}'
 
 # print(get_user(user_id='zill'))
 # add_user(user_id='roy',email='rsnehasish125@gmail.com',password='r125@W2a')

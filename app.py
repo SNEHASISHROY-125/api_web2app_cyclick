@@ -1,6 +1,6 @@
 from typing import List
 from typing import Optional
-from schemas import Blog, ShowBlog , User , DUser , Show_user , Test, Chat
+from schemas import Blog, ShowBlog , User , DUser , Show_user , Test, Chat 
 from fastapi import FastAPI, Depends, status, Response, HTTPException
 import models
 from database import engine, get_db
@@ -49,11 +49,11 @@ def home(help=None):
     pass_ = 'admin'
     if help and help==pass_:  return guide
     else: return {'helo! help-> pass help'}
- 
+
 @app.get('/sign-in',status_code=status.HTTP_204_NO_CONTENT,tags=['Test'])
-def logIN(user_D: Test):
+def logIN(email,password):
     # smtp
-    return {'response':'log-in', 'Details':[user_D.email,user_D.email[:user_D.email.rindex("@")]]}
+    return {'response':'log-in', 'Details':email}
 
 @app.get('/sign-in/verify',status_code=status.HTTP_202_ACCEPTED,tags=['Test'])
 def logIN(user_D: Test):
@@ -63,7 +63,7 @@ def logIN(user_D: Test):
 @app.post('/sign-up',status_code=status.HTTP_201_CREATED,tags=['Test'])
 def signUP(request:Test):
     print(user_id:= request.email[:request.email.rindex("@")])
-    s3.add_user(user_id=user_id,password=request.password,email=request.email)
+    s3.add_user(user_id=user_id,name_=request.name,password=request.password,email=request.email)
     return request
 
 @app.get('/get-user',status_code=status.HTTP_200_OK,tags=['Test'])
