@@ -99,3 +99,4 @@ def add_user_data(user_id ,add_method ,msgg, file_val = None):
 # add_user_data(user_id='polly',add_method='msgg',msgg='hello')
 
 # hsh.decrypt(key_=key_,msgg_body=b'gAAAAABk6Hv545fZ2BiGBq_4x7NdQAKcg5-FtkKjrjk_eI9J3lgMwObrzoXH5uqv4IhpKhnF1aiE_Vv4YjlRv7XUxexbPrfafg==')
+# print(hsh.Hash().verify('passwor','$2b$12$aF86eKytAeItzDsoIxvQmOEeHAdkgWUoPbgtZuuiPTPrgEopl4DfW'))

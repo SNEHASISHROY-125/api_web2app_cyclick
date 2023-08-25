@@ -4,11 +4,11 @@ pwd_cxt = CryptContext(schemes=['bcrypt'], deprecated='auto')
 
 # pwd_cxt.verify(request.password, user.password)
 class Hash():
-    def bcrypt(self ,password: str):
+    def bcrypt(self ,password: str) ->str:
         # hashed_pwd = pwd_cxt.hash(password)
         return pwd_cxt.hash(password)
     
-    def verify(self, plain_password, hashed_password):
+    def verify(self, plain_password: str, hashed_password: str) -> bool:
         return pwd_cxt.verify(plain_password, hashed_password)
 
 # print(Hash().bcrypt('admin'))
