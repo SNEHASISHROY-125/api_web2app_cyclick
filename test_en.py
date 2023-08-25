@@ -112,4 +112,7 @@ email = "example124@gmail.com"
 user_ = email.rindex('@')
 # print(email[:user_])
 if 'rsnehasish15' in (U_data:=get_DB(key=user_key)).keys(): print('yes')
-print(U_data)
+# print(U_data)
+
+# get_DB(key=user_key)
+# clear_DB(key=user_key)

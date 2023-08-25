@@ -81,7 +81,7 @@ def del_admin_credentials(admin_id,password=None,bucket=bucket,key=admin_key,) -
         # verify using Hash(password) ....
         # delete admin_id
         admin_DB.pop(admin_id)
-        if admin_DB ==  {}: admin_DB = get_schema(key=key)
+        if admin_DB ==  {}: admin_DB = []
         response=put_DB(key=key,body=admin_DB)
         if response == 'Done': print(f'Deleted USER with id: {admin_id}')
     else: print(f"id: {admin_id} doesn't exist")
