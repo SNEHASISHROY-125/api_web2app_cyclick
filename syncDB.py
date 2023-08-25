@@ -199,6 +199,8 @@ def del_user(user_id,password=None,bucket=bucket,key=user_key):
     if user_id in DB:
         DB.pop(user_id)
         put_DB(key=get_key,body=DB)
+        return True
+    else: return f'No User Named {user_id}'
 
 # ADD: USER DATA
 def add_user_data(user_id ,add_method ,msgg, file_val = None):
