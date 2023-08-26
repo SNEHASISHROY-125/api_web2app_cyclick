@@ -9,3 +9,4 @@ datetime
 boto3
 pymongo
 cryptography
+requests

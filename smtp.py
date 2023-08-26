@@ -6,7 +6,7 @@ import os
 import requests  #tokenZ as tz
 
 api = api = os.environ.get('smtp_api')
-api = ''
+# api = ''
 
 url = "https://api.brevo.com/v3/smtp/email"
 # api = "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"
@@ -52,7 +52,7 @@ def content(link: str) -> str:
     # print(html_)
     return html_
 
-def send_mail(link :str,name :str,email :str) -> bool:
+def send_mail(link :str,name :str,email :str) ->int:
     # prepare link:
     ## get with JWT ....
 
@@ -66,11 +66,11 @@ def send_mail(link :str,name :str,email :str) -> bool:
 
     if response.status_code == 201:
         print("Greetings message sent successfully to:",email)
-        return True
+        return response.status_code
     else:
         print("Failed to send greetings message. Status code:", response.status_code)
         print(response.text)
-        return False
+        return response.status_code
 
 
 # payload_('r@125','roy')

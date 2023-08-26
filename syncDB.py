@@ -252,7 +252,7 @@ def get_user(user_id) ->str:
         if user_id in (U_data:=get_DB(key=user_key)).keys():return U_data[user_id]
         else: return f'No User Named {user_id}'
 
-def password_reset(user_email: str,new_password: str) ->bool:
+def password_reset(user_email: str,new_password: str) ->str:
     'ressonse | Check Email at-> {user_email}'
     # get user_DB && generate code:
     with concurrent.futures.ThreadPoolExecutor() as executor:
@@ -268,13 +268,12 @@ def password_reset(user_email: str,new_password: str) ->bool:
         # send e-mail:
         import smtp 
         payload_list = [user_DB[user_id]['name'],user_DB[user_id]['email'],user_DB[user_id]['key']]
-        smtp.send_mail(name=payload_list[0],email=payload_list[1],link=f'https://api0w2a.cyclic.cloud/password-reset/verify?user_id={user_id}&new_password={new_password}&code={send_code}')
+        response_ = smtp.send_mail(name=payload_list[0],email=payload_list[1],link=f'https://api0w2a.cyclic.cloud/password-reset/verify?user_id={user_id}&new_password={new_password}&code={send_code}')
         # update user_DB (code):
-        print(user_DB)
+        # print(user_DB)
         threading.Thread(target=put_DB,args=(bucket,user_key,user_DB)).start()
-        # thread.join()
-        return True
-    else: return False #f'No User Named {user_id}'
+        if response_ == 201 : return f'Mail sent to {user_email} ,check SPAM-Folder as welll!'
+    else: return f'No User Named {user_id}'
 
 def password_verify(user_id : str,new_password: str,code: str) -> bool:
     user_DB = get_DB(key=user_key)

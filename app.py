@@ -59,7 +59,7 @@ def logIN(email: str,password: str):
 @app.post('/sign-up',status_code=status.HTTP_200_OK,tags=['Test'])
 def signUP(request:Test):
     smtp.send_mail(link=f'http://127.0.0.1:8000/sign-up/verify?name={request.name}&email={request.email}&password={request.password}',name=request.name,email=request.email)
-    return f'Check your email at {request.email} for verification link!'
+    return f'Check your email at {request.email} for verification link!, as well as SPAM-Folder'
 
 @app.get('/sign-up/verify',status_code=status.HTTP_201_CREATED,tags=['Test'])
 def verify_(name:str,email:str,password:str):
