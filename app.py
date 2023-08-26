@@ -61,7 +61,7 @@ def signUP(request:Test):
     smtp.send_mail(link=f'https://api0w2a.cyclic.cloud/sign-up/verify?name={request.name}&email={request.email}&password={request.password}',name=request.name,email=request.email)
     return f'Check your email at {request.email} for verification link!, as well as SPAM-Folder'
 
-@app.get('/sign-up/verify',status_code=status.HTTP_201_CREATED,tags=['Test-Backennd'])
+@app.get('/sign-up/verify',status_code=status.HTTP_201_CREATED,tags=['Test-Backend'])
 def verify_(name:str,email:str,password:str):
     print(user_id:= email[:email.rindex("@")])
     response_ = s3.add_user(user_id=user_id,name_=name,email=email,password=password)
