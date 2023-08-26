@@ -61,7 +61,7 @@ def signUP(request:Test):
     smtp.send_mail(link=f'https://api0w2a.cyclic.cloud/sign-up/verify?name={request.name}&email={request.email}&password={request.password}',name=request.name,email=request.email)
     return f'Check your email at {request.email} for verification link!, as well as SPAM-Folder'
 
-@app.get('/sign-up/verify',status_code=status.HTTP_201_CREATED,tags=['Test'])
+@app.get('/sign-up/verify',status_code=status.HTTP_201_CREATED,tags=['Test-Backennd'])
 def verify_(name:str,email:str,password:str):
     print(user_id:= email[:email.rindex("@")])
     response_ = s3.add_user(user_id=user_id,name_=name,email=email,password=password)
@@ -102,7 +102,7 @@ def get_user_data(user_id: str):
 def password_reset(user_email: str,new_password: str):
     return s3.password_reset(user_email=user_email,new_password=new_password)
 
-@app.get('/password-reset/verify',status_code=status.HTTP_202_ACCEPTED,tags=['Test'])
+@app.get('/password-reset/verify',status_code=status.HTTP_202_ACCEPTED,tags=['Test-Backend'])
 def password_verify(user_id : str,new_password: str,code: str):
     return s3.password_verify(code=code,new_password=new_password,user_id=user_id)
 '''
