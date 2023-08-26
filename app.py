@@ -50,21 +50,24 @@ def home(help=None):
     if help and help==pass_:  return guide
     else: return {'helo! help-> pass help'}
 
-@app.get('/sign-in',status_code=status.HTTP_204_NO_CONTENT,tags=['Test'])
-def logIN(email,password):
-    # smtp
-    return {'response':'log-in', 'Details':email}
+@app.get('/sign-in',status_code=status.HTTP_202_ACCEPTED,tags=['Test'])
+def logIN(email: str,password: str):
+    response_ = s3.login(user_email=email,password=password)
+    if not response_: raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f'User with email:{email} not found or password incorrect!')
+    return response_
 
-@app.get('/sign-in/verify',status_code=status.HTTP_202_ACCEPTED,tags=['Test'])
-def logIN(user_D: Test):
-    # smtp
-    return {'response':'log-in-verify'}
 
-@app.post('/sign-up',status_code=status.HTTP_201_CREATED,tags=['Test'])
+@app.post('/sign-up',status_code=status.HTTP_200_OK,tags=['Test'])
 def signUP(request:Test):
-    print(user_id:= request.email[:request.email.rindex("@")])
-    s3.add_user(user_id=user_id,name_=request.name,password=request.password,email=request.email)
-    return request
+    smtp.send_mail(link=f'http://127.0.0.1:8000/sign-up/verify?name={request.name}&email={request.email}&password={request.password}',name=request.name,email=request.email)
+    return f'Check your email at {request.email} for verification link!'
+
+@app.get('/sign-up/verify',status_code=status.HTTP_201_CREATED,tags=['Test'])
+def verify_(name:str,email:str,password:str):
+    print(user_id:= email[:email.rindex("@")])
+    response_ = s3.add_user(user_id=user_id,name_=name,email=email,password=password)
+    if not response_: raise HTTPException(status_code=status.HTTP_208_ALREADY_REPORTED, detail=f'User with id:{user_id} already exists!')
+    return {'response':'log-in-verification sucess!'}
 
 @app.get('/get-user',status_code=status.HTTP_200_OK,tags=['Test'])
 def get_user(user_id:str):
@@ -72,7 +75,9 @@ def get_user(user_id:str):
 
 @app.delete('/delete-user',status_code=status.HTTP_200_OK,tags=['Test'])
 def delete_user(user_id:str):
-    return s3.del_user(user_id=user_id)
+    response_ = s3.del_user(user_id=user_id)
+    if not response_: raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f'User with id:{user_id} not found!') 
+    return f'Deleted User with id:{user_id}'
 
 @app.post('/set-user-data',status_code=status.HTTP_200_OK,tags=['Test'])
 def user_data(request: Chat):
@@ -95,9 +100,12 @@ def get_user_data(user_id: str):
     else: return user_id ,"doesn't exist!"
 
 @app.get('/password-reset',status_code=status.HTTP_200_OK,tags=['Test'])
-def password_reset(user_id: str):
-    return s3.password_reset(user_id=user_id)
+def password_reset(user_email: str,new_password: str):
+    return s3.password_reset(user_email=user_email,new_password=new_password)
 
+@app.get('/password-reset/verify',status_code=status.HTTP_202_ACCEPTED,tags=['Test'])
+def password_verify(user_id : str,new_password: str,code: str):
+    return s3.password_verify(code=code,new_password=new_password,user_id=user_id)
 '''
 @app.post('/blog', status_code=status.HTTP_201_CREATED,tags=['Blogs'])
 def create(request: Blog , db: Session=Depends(get_db)):

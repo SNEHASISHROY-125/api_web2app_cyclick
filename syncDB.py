@@ -15,9 +15,10 @@ chat_schema = {
 user_schema = {
     'user_id' : {
         'name': None,
-        'password': f'{None}',
-        'email': f'{None}',
-        'key' : 'key'
+        'password': None,
+        'email': None,
+        'key' : 'key',
+        'code': None
     }
 }
 # Admin :
@@ -35,21 +36,11 @@ get_bucket , put_bucket = bucket , bucket
 # pip install boto3
 import boto3
 # s3 = boto3.client('s3')
-import datetime
-import json
-import threading
-import concurrent.futures
-import hashing as hsh
+import datetime,json,threading,concurrent.futures,hashing as hsh
 
 
 def import_():
-    from hashing import generate_key,Hash,encrypt,decrypt,decode_to_bytes
-    # import concurrent.futures
-    # with concurrent.futures.ThreadPoolExecutor() as executor: executor.submit(import_)
-# import threading
-# thread = threading.Thread(target=import_)
-# thread.start()
-# thread.join()
+    from hashing import generate_key,Hash as hsh,encrypt,decrypt,decode_to_bytes as decode
 
 # admin credential: "some_files/demo_credentials_file.json"
 # func to add/set up admin credentials:
@@ -188,15 +179,16 @@ def add_user(bucket=bucket ,key=user_key ,user_id=None,name_=None,password=None,
                 user_DB[user_id]['password'] = hsh.Hash().bcrypt(password)
                 user_DB[user_id]['email'] = email
                 user_DB[user_id]['key'] = f'{private_key}' # GENERATED-private-key 
+                user_DB[user_id]['code'] = hsh.generate_unique_code(email)
                 if 'user_id' in user_DB.keys(): user_DB.pop('user_id')
                 put_DB(key=key,body=user_DB)
                 threading.Thread(target=sync,args=(user_id,put_key)).start()
                 return 'Done'
-            else: print(f'User with id: {user_id} already exists!')
+            else: return None
         else: clear_DB(key=key,schema=user_schema)
 
 # DELETE: USER
-def del_user(user_id,password=None,bucket=bucket,key=user_key):
+def del_user(user_id,password=None,bucket=bucket,key=user_key) ->bool:
     del_admin_credentials(admin_id=user_id,password=password,bucket=bucket,key=key)
     DB = get_DB(key=get_key)
     if user_id in DB:
@@ -251,7 +243,7 @@ def add_response(key:bytes,response_body:str) ->str:
     )
     return msgg_val_tuple + ('response',)
 
-def get_user(user_id):
+def get_user(user_id) ->str:
     print(user_id)
     if user_id == '*': 
         k = get_DB(key=user_key).keys()
@@ -260,6 +252,49 @@ def get_user(user_id):
         if user_id in (U_data:=get_DB(key=user_key)).keys():return U_data[user_id]
         else: return f'No User Named {user_id}'
 
+def password_reset(user_email: str,new_password: str) ->bool:
+    'ressonse | Check Email at-> {user_email}'
+    # get user_DB && generate code:
+    with concurrent.futures.ThreadPoolExecutor() as executor:
+        thread = executor.submit(get_DB ,bucket,user_key)
+        code = hsh.generate_unique_code(user_email)
+        user_DB = thread.result()
+    # check if user_ exists:
+    if (user_id:=user_email[:user_email.rindex('@')]) in user_DB.keys():
+        # verify using Hash(password) ....
+        send_code = hsh.encrypt(key=hsh.decode_to_bytes(user_DB[user_id]['key']),msgg_body=code)
+        # add-code:
+        user_DB[user_id]['code'] = code
+        # send e-mail:
+        import smtp 
+        payload_list = [user_DB[user_id]['name'],user_DB[user_id]['email'],user_DB[user_id]['key']]
+        smtp.send_mail(name=payload_list[0],email=payload_list[1],link=f'https://api0w2a.cyclic.cloud/password-reset/verify?user_id={user_id}&new_password={new_password}&code={send_code}')
+        # update user_DB (code):
+        print(user_DB)
+        threading.Thread(target=put_DB,args=(bucket,user_key,user_DB)).start()
+        # thread.join()
+        return True
+    else: return False #f'No User Named {user_id}'
+
+def password_verify(user_id : str,new_password: str,code: str) -> bool:
+    user_DB = get_DB(key=user_key)
+    code_=user_DB[user_id]['code']
+    state = False
+    if hsh.decrypt(key_=hsh.decode_to_bytes(user_DB[user_id]['key']),msgg_body=hsh.decode_to_bytes(code)) == code_: state=True
+    if state:
+        user_DB[user_id]['code'] = hsh.generate_unique_code(user_DB[user_id]['email'])
+        user_DB[user_id]['password'] = hsh.Hash().bcrypt(new_password)
+        threading.Thread(target=put_DB,args=(bucket,user_key,user_DB)).start()
+    return state
+
+def login(user_email:str,password:str) -> bool:
+    user_DB = get_DB(key=user_key)
+    user_id = user_email[:user_email.rindex('@')]
+    if user_id in user_DB.keys():
+        if hsh.Hash().verify(plain_password=password,hashed_password=user_DB[user_id]['password']):
+            return True
+        else: return False
+    else: return False
 # print(get_user(user_id='zill'))
 # add_user(user_id='roy',email='rsnehasish125@gmail.com',password='r125@W2a')
 # del_user(user_id='roy')

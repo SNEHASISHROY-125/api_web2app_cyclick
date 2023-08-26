@@ -15,17 +15,25 @@ class Hash():
 
 
 from cryptography.fernet import Fernet
-import ast
+
 # Generate a random symmetric key
 # key = Fernet.generate_key()
 # key = b'bHE4cl3Qmu-epB1XKjkYSw0ItVFMAVn9Fyiw-BRP_2Q='
 # print('key:',key)
+def generate_unique_code(input_string: str) ->str:
+    import random, string
+    # Define characters to use for generating the code (you can customize this)
+    characters = string.ascii_letters + string.digits
+    # Generate a random code
+    random_code = ''.join(random.choice(characters) for _ in range(len(input_string)))
+    return random_code 
 
 def generate_key()-> bytes:
     return Fernet.generate_key()
 
 def decode_to_bytes(payload:str) ->bytes:
     # import concurrent.futures
+    import ast
     # Use ast.literal_eval to safely evaluate the string as bytes
     bytes_data = ast.literal_eval(payload.encode('utf-8').decode('unicode_escape'))
     return bytes_data

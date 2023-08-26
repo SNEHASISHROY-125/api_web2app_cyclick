@@ -20,7 +20,7 @@ decrypt(
     key_=key,
     msgg_body=b'gAAAAABk53JC0FSjev0PVRe3SvVrVwUGIMS4IXVTYdF8XLSEoFw8pw-tj5wFCTbiPxuHXCxKD9woz14_eG9Tm0D6CRaKx1ZegfL0wOTglaVGs1F-2snMcKosqmYTqvknRI-r6JhmDd8fIUq7QvjeuePCKo-G60AwH1gemfVMdfBdTE4T46ePdubNTnQMTHieyx6BC6DeXGgNSh9waxTKQs9HUHege1qj6RJejh7jQXqxSg31Q-PAwBdEhIT1S-KeAMmwTFk4ij_aAXVgA8CvNfqh1R_oXGr3w9pj1G4ET9YWBaWBIXg6GTtS4Uau-KJ40EiBYfvYS55t1tbxP5wWAFvX0OPY8JJgPWc8Ibw7s1cZYl06QSd95tlOhQTBLkJWL5RCfb-GR5gahdMZALlbH5ZciT2aVTZAxYw_pIUoDKDTBtPJO38df4comwRaHoQtYIqi60XW8pwSEg_u-BxPr4rub8n9fdep2G2ONegLNO8O6lR5eHYxXyR3SkZpa-GD629DDfx_IbCIOddKI0ltiHSMZ4sl4RKg7LHFeDUDftir2SOpKDMWq0B-kojIbCRzI21BLB911TM6du5ZImSyMXdxZAs51JfbcQYfZgMB_2HqGUvluQTTYNrjfBB1e_xSH3ahgJ5CFOIoEqW232ottnSfENaKkCfy-W_Jeesj1RglGZMUJm9vOX6KvVytaG9qptKxB_L8ioeDQsnkTPzMPdaEdEt4-YM3aw=='
 )
-'''
+
 # Token_error: decrypt
 # try: ...
 # except InvalidToken: ...
@@ -36,7 +36,7 @@ import threading
 # thread.start()
 # thread.join()
 
-'''
+
 import concurrent.futures
 # Create a ThreadPoolExecutor
 with concurrent.futures.ThreadPoolExecutor() as executor:
@@ -111,8 +111,37 @@ email = "example124@gmail.com"
 
 user_ = email.rindex('@')
 # print(email[:user_])
-if 'rsnehasish15' in (U_data:=get_DB(key=user_key)).keys(): print('yes')
+# if 'rsnehasish15' in (U_data:=get_DB(key=user_key)).keys(): print('yes')
 # print(U_data)
 
 # get_DB(key=user_key)
 # clear_DB(key=user_key)
+
+
+
+def generate_unique_code(input_string):
+    def strt():
+        def imp_str(): 
+            import string
+            import random
+
+        str_ = threading.Thread(target=imp_str)
+        str_.start()
+        str_.join()
+    # threading.Thread(target=imp_str).start()
+        # Define characters to use for generating the code (you can customize this)
+        characters = string.ascii_letters + string.digits
+        # Generate a random code
+        random_code = ''.join(random.choice(characters) for _ in range(len(input_string)))
+        return random_code 
+    return strt()
+
+user_email = "rsnehasish125@gmail.com"
+# unique_code = generate_unique_code(input_string)
+# print(user_id:=user_email[:user_email.rindex('@')])
+# print(hsh.Hash().verify('PQCOIaQnTmdCpVvGFFoAtFY','$2b$12$vfGdp0pA9MmY052Mp7m.NeIEUcMB715PqM9WkveAuXBMje5zXoIIG'))
+# get_DB(key=user_key)
+
+# u = 'halo'
+# a = 'halo'
+# if a == u: print('match')

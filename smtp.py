@@ -2,10 +2,10 @@
 Send-In-Blue: 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
 '''
 
-# import requests
-import tokenZ as tz
+import requests  #tokenZ as tz
 
 # api = tz.smtp_key
+api = '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'
 
 url = "https://api.brevo.com/v3/smtp/email"
 # api = "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"
@@ -28,7 +28,7 @@ payload_schema = {
     },
     "to": [
         {
-            "email": "rsnehasish1251@gmail.com",
+            "email": 'rsnehasish1251@gmail.com',
             "name": "Recipient's Name"
         }
     ],
@@ -39,19 +39,19 @@ payload_schema = {
 headers = {
     "accept": "application/json",
     "content-type": "application/json",
-    "api-key": 'api'
+    "api-key": api
 }
 
 def verify_Token(token):...
 
-def content(link) -> str:
+def content(link: str) -> str:
     # html_=html_content
     # dynamic_link = link
     html_ = html_content.format(link)
     # print(html_)
     return html_
 
-def send_mail(link,name,email):
+def send_mail(link :str,name :str,email :str) -> bool:
     # prepare link:
     ## get with JWT ....
 
@@ -64,14 +64,16 @@ def send_mail(link,name,email):
     response = requests.post(url, json=payload, headers=headers)
 
     if response.status_code == 201:
-        print("Greetings message sent successfully.")
+        print("Greetings message sent successfully to:",email)
+        return True
     else:
         print("Failed to send greetings message. Status code:", response.status_code)
         print(response.text)
+        return False
 
 
 # payload_('r@125','roy')
 # print(payload)
 # html-content:
 
-# send_mail(name='LambdaX',email="rsnehasish1251@gmail.com",link='https://github.com/sendinblue/APIv3-python-library')
+# send_mail(name='LambdaX',email="rsnehasish1251@gmail.com",link='https://api0w2a.cyclic.cloud/?help=admin')
