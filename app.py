@@ -56,7 +56,6 @@ def logIN(email: str,password: str):
     if not response_: raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f'User with email:{email} not found or password incorrect!')
     return response_
 
-
 @app.post('/sign-up',status_code=status.HTTP_200_OK,tags=['Test'])
 def signUP(request:Test):
     smtp.send_mail(link=f'http://127.0.0.1:8000/sign-up/verify?name={request.name}&email={request.email}&password={request.password}',name=request.name,email=request.email)

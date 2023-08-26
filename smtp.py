@@ -2,10 +2,11 @@
 Send-In-Blue: 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
 '''
 
+import os
 import requests  #tokenZ as tz
 
-# api = tz.smtp_key
-api = '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'
+api = api = os.environ.get('smtp_api')
+api = ''
 
 url = "https://api.brevo.com/v3/smtp/email"
 # api = "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"

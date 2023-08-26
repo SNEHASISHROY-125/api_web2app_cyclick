@@ -7,7 +7,7 @@ import getpass
 import os
 '''
 # Get the value of the environment variable 'smtp_key'
-smtp_key = os.environ.get('smtp_key')
+api = os.environ.get('smtp_api')
 
 # Check if the environment variable exists
 if smtp_key is None:
